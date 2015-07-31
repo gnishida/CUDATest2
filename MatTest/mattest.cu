@@ -13,8 +13,8 @@ void mattest(float* matA, float* matB, unsigned char* mask, int* size, float *re
 	__shared__ float total;
 	
 	if (id == 0) {
-		count = 0;
-		total = 0;
+		count = 0.0;
+		total = 0.0;
 	}
 	int s = size[0];
 
@@ -46,15 +46,8 @@ void mattest(float* matA, float* matB, unsigned char* mask, int* size, float *re
 	__syncthreads();
 
 	if (id == 0) {
-		if (total > 0) {
-			result[0] = 1.0 - count / total;
-		} else {
-			if (count > 0) {
-				result[0] = -1.0;
-			} else {
-				result[0] = 1.0;
-			}
-		}
+		result[0] = count;
+		result[1] = total;
 	}
 }
  
@@ -63,14 +56,14 @@ void mattest(float* matA, float* matB, unsigned char* mask, int* size, float *re
  */
 void cudaMain(cv::Mat_<float>& a, cv::Mat_<float>& b, cv::Mat_<uchar>& mask) {
 	float* hMatA = (float*)malloc(sizeof(float) * a.rows * a.cols);
-	float* hMatB = (float*)malloc(sizeof(float) * a.rows * a.cols);
-	unsigned char* hMask = (unsigned char*)malloc(sizeof(unsigned char) * a.rows * a.cols);
+	float* hMatB = (float*)malloc(sizeof(float) * b.rows * b.cols);
+	unsigned char* hMask = (unsigned char*)malloc(sizeof(unsigned char) * mask.rows * mask.cols);
 	int hSize = a.rows * a.cols;
 	float* dMatA;
 	float* dMatB;
 	unsigned char* dMask;
 	int* dSize;
-	float* hResult = (float*)malloc(sizeof(float));
+	float* hResult = (float*)malloc(sizeof(float) * 2);
 	float* dResult;
 
 	memcpy(hMatA, a.data, sizeof(float) * a.rows * a.cols);
@@ -81,20 +74,20 @@ void cudaMain(cv::Mat_<float>& a, cv::Mat_<float>& b, cv::Mat_<uchar>& mask) {
 	cudaMalloc((void**)&dMatB, sizeof(float) * b.rows * b.cols); 
 	cudaMemcpy(dMatB, hMatB, sizeof(float) * b.rows * b.cols, cudaMemcpyHostToDevice);
 
-	memcpy(hMask, mask.data, sizeof(float) * mask.rows * mask.cols);
-	cudaMalloc((void**)&dMask, sizeof(float) * mask.rows * mask.cols); 
-	cudaMemcpy(dMask, dMask, sizeof(float) * mask.rows * mask.cols, cudaMemcpyHostToDevice);
+	memcpy(hMask, mask.data, sizeof(unsigned char) * mask.rows * mask.cols);
+	cudaMalloc((void**)&dMask, sizeof(unsigned char) * mask.rows * mask.cols); 
+	cudaMemcpy(dMask, hMask, sizeof(unsigned char) * mask.rows * mask.cols, cudaMemcpyHostToDevice);
 
 	cudaMalloc((void**)&dSize, sizeof(int)); 
 	cudaMemcpy(dSize, &hSize, sizeof(int), cudaMemcpyHostToDevice);
 
-	cudaMalloc((void**)&dResult, sizeof(float));
+	cudaMalloc((void**)&dResult, sizeof(float) * 2);
 	
 	mattest<<<1, NUM_THREADS>>>(dMatA, dMatB, dMask, dSize, dResult);
 
-	cudaMemcpy(hResult, dResult, sizeof(float), cudaMemcpyDeviceToHost);
+	cudaMemcpy(hResult, dResult, sizeof(float) * 2, cudaMemcpyDeviceToHost);
 	cudaFree(dResult);
 
-	cout << "Result: " << hResult[0] << endl;
+	//cout << "Result: " << hResult[0] << ", " << hResult[1] << endl;
 	free(hResult);
 }
