@@ -1,11 +1,12 @@
 ﻿/**
  * opencvのMatを使った処理
- * CPU版とGPU版を実装したが、残念ながら、CPU版の方が速い。
- * 主な原因は、MatデータをCPUからGPUへ転送する時間だ。
+ * pinned memoryを使って性能が向上するか調べたが、
+ * 結果はむしろ悪化した。
+ * 
  */
 
 #include <stdio.h>
-#include "mattest.cuh"
+#include "pinned_memory_test.cuh"
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
 
@@ -23,7 +24,7 @@ int main() {
 	cv::randu(b, 0, 1.0);
 	cv::threshold(a, a, 0.5, 1.0, cv::THRESH_BINARY);
 	cv::threshold(b, b, 0.5, 1.0, cv::THRESH_BINARY);
-	cv::circle(c, cv::Point(GRID_SIZE * 0.5, GRID_SIZE * 0.5), GRID_SIZE * 0.2, cv::Scalar(1), -1);
+	cv::circle(c, cv::Point(GRID_SIZE * 0.5, GRID_SIZE * 0.5), GRID_SIZE * 0.5, cv::Scalar(1), -1);
 
 	/*
 	cout << a << endl;
@@ -45,9 +46,12 @@ int main() {
 	cout << "Time1: " << (double)(end - start) << endl;
 
 	// CUDA版
+	start = clock();
 	for (int i = 0; i < N; ++i) {
 		cudaMain(a, b, c);
 	}
+	end = clock();
+	cout << "Time2: " << (double)(end - start) << endl;
 
 	return 0;
 }

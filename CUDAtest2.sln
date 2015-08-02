@@ -13,6 +13,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test", "Test\Test.vcxproj",
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MatTest", "MatTest\MatTest.vcxproj", "{ACD4885B-21F6-4DA3-B30F-6DA40D6B9632}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PinnedMemoryTest", "MappedMemoryTest\MappedMemoryTest.vcxproj", "{0966F1AF-4FED-4F55-9467-85316628363A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ComputeIndicator", "ComputeIndicator\ComputeIndicator.vcxproj", "{2CB2C6FB-33A4-4D72-AA54-14CCDFF2155F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -54,11 +58,23 @@ Global
 		{ACD4885B-21F6-4DA3-B30F-6DA40D6B9632}.Debug|Win32.ActiveCfg = Debug|Win32
 		{ACD4885B-21F6-4DA3-B30F-6DA40D6B9632}.Debug|Win32.Build.0 = Debug|Win32
 		{ACD4885B-21F6-4DA3-B30F-6DA40D6B9632}.Debug|x64.ActiveCfg = Debug|x64
-		{ACD4885B-21F6-4DA3-B30F-6DA40D6B9632}.Debug|x64.Build.0 = Debug|x64
 		{ACD4885B-21F6-4DA3-B30F-6DA40D6B9632}.Release|Win32.ActiveCfg = Release|Win32
 		{ACD4885B-21F6-4DA3-B30F-6DA40D6B9632}.Release|Win32.Build.0 = Release|Win32
 		{ACD4885B-21F6-4DA3-B30F-6DA40D6B9632}.Release|x64.ActiveCfg = Release|x64
-		{ACD4885B-21F6-4DA3-B30F-6DA40D6B9632}.Release|x64.Build.0 = Release|x64
+		{0966F1AF-4FED-4F55-9467-85316628363A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0966F1AF-4FED-4F55-9467-85316628363A}.Debug|Win32.Build.0 = Debug|Win32
+		{0966F1AF-4FED-4F55-9467-85316628363A}.Debug|x64.ActiveCfg = Debug|x64
+		{0966F1AF-4FED-4F55-9467-85316628363A}.Release|Win32.ActiveCfg = Release|Win32
+		{0966F1AF-4FED-4F55-9467-85316628363A}.Release|Win32.Build.0 = Release|Win32
+		{0966F1AF-4FED-4F55-9467-85316628363A}.Release|x64.ActiveCfg = Release|x64
+		{2CB2C6FB-33A4-4D72-AA54-14CCDFF2155F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2CB2C6FB-33A4-4D72-AA54-14CCDFF2155F}.Debug|Win32.Build.0 = Debug|Win32
+		{2CB2C6FB-33A4-4D72-AA54-14CCDFF2155F}.Debug|x64.ActiveCfg = Debug|x64
+		{2CB2C6FB-33A4-4D72-AA54-14CCDFF2155F}.Debug|x64.Build.0 = Debug|x64
+		{2CB2C6FB-33A4-4D72-AA54-14CCDFF2155F}.Release|Win32.ActiveCfg = Release|Win32
+		{2CB2C6FB-33A4-4D72-AA54-14CCDFF2155F}.Release|Win32.Build.0 = Release|Win32
+		{2CB2C6FB-33A4-4D72-AA54-14CCDFF2155F}.Release|x64.ActiveCfg = Release|x64
+		{2CB2C6FB-33A4-4D72-AA54-14CCDFF2155F}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

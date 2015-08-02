@@ -1,5 +1,5 @@
 ﻿#include <stdio.h>
-#include "mattest.cuh"
+#include "pinned_memory_test.cuh"
 
 using namespace std;
 
@@ -55,15 +55,25 @@ void mattest(float* matA, float* matB, unsigned char* mask, int* size, float *re
  * 2つの行列の差分の数を計算する。
  */
 void cudaMain(cv::Mat_<float>& a, cv::Mat_<float>& b, cv::Mat_<uchar>& mask) {
-	float* hMatA = (float*)malloc(sizeof(float) * a.rows * a.cols);
-	float* hMatB = (float*)malloc(sizeof(float) * b.rows * b.cols);
-	unsigned char* hMask = (unsigned char*)malloc(sizeof(unsigned char) * mask.rows * mask.cols);
-	int hSize = a.rows * a.cols;
+	// ホスト側でメモリ確保
+	float* hMatA;// = (float*)malloc(sizeof(float) * a.rows * a.cols);
+	cudaHostAlloc((void**)&hMatA, sizeof(float) * a.rows * a.cols, cudaHostAllocDefault);
+	float* hMatB;// = (float*)malloc(sizeof(float) * b.rows * b.cols);
+	cudaHostAlloc((void**)&hMatB, sizeof(float) * b.rows * b.cols, cudaHostAllocDefault);
+	unsigned char* hMask;// = (unsigned char*)malloc(sizeof(unsigned char) * mask.rows * mask.cols);
+	cudaHostAlloc((void**)&hMask, sizeof(unsigned char) * mask.rows * mask.cols, cudaHostAllocDefault);
+	//int hSize = a.rows * a.cols;
+	int* hSize;
+	cudaHostAlloc((void**)&hSize, sizeof(int), cudaHostAllocDefault);
+	hSize[0] = a.rows * a.cols;
+	float* hResult;// = (float*)malloc(sizeof(float) * 2);
+	cudaHostAlloc((void**)&hResult, sizeof(float) * 2, cudaHostAllocDefault);
+
+	// デバイス側の変数
 	float* dMatA;
 	float* dMatB;
 	unsigned char* dMask;
 	int* dSize;
-	float* hResult = (float*)malloc(sizeof(float) * 2);
 	float* dResult;
 
 	memcpy(hMatA, a.data, sizeof(float) * a.rows * a.cols);
@@ -80,7 +90,7 @@ void cudaMain(cv::Mat_<float>& a, cv::Mat_<float>& b, cv::Mat_<uchar>& mask) {
 	cudaMemcpy(dMask, hMask, sizeof(unsigned char) * mask.rows * mask.cols, cudaMemcpyHostToDevice);
 
 	cudaMalloc((void**)&dSize, sizeof(int)); 
-	cudaMemcpy(dSize, &hSize, sizeof(int), cudaMemcpyHostToDevice);
+	cudaMemcpy(dSize, hSize, sizeof(int), cudaMemcpyHostToDevice);
 
 	cudaMalloc((void**)&dResult, sizeof(float) * 2);
 
@@ -88,8 +98,24 @@ void cudaMain(cv::Mat_<float>& a, cv::Mat_<float>& b, cv::Mat_<uchar>& mask) {
 
 	cudaMemcpy(hResult, dResult, sizeof(float) * 2, cudaMemcpyDeviceToHost);
 
+	cudaFree(dMatA);
+	cudaFree(dMatB);
+	cudaFree(dMask);
+	cudaFree(dSize);
 	cudaFree(dResult);
 
 	//cout << "Result: " << hResult[0] << ", " << hResult[1] << endl;
-	free(hResult);
+	//cout << "Time2: " << t1 << "," << t2 << "," << t3 << "," << t4 << "," << t5 << endl;
+
+	//free(hMatA);
+	//free(hMatB);
+	//free(hMask);
+	//free(hSize);
+	//free(hResult);
+
+	cudaFreeHost(hMatA);
+	cudaFreeHost(hMatB);
+	cudaFreeHost(hMask);
+	cudaFreeHost(hSize);
+	cudaFreeHost(hResult);
 }
