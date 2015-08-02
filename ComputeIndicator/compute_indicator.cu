@@ -19,8 +19,11 @@ void simulation(Literal* model, float* indicator) {
 
 __device__
 float computeScore(float* target, unsigned char* mask, float* indicator) {
-	int count = 0;
-	int total = 0;
+	__shared__ float count[NUM_THREADS];
+	__shared__ float total[NUM_THREADS];
+
+	// 並列化処理を実装
+	/*
 	for (int i = 0; i < GRID_SIZE * GRID_SIZE; ++i) {
 		if (mask[i] > 0) {
 			if (target[i] > 0.5) {
@@ -41,6 +44,7 @@ float computeScore(float* target, unsigned char* mask, float* indicator) {
 			return 1;
 		}
 	}
+	*/
 }
 
 __device__
@@ -53,8 +57,6 @@ void doNothing() {
 
 __global__ 
 void UCT(Literal* model, int* modelLength, float* target, unsigned char* mask, float* indicator, int* result)  {
-	__shared__ float score[NUM_THREADS];
-
 	int id = threadIdx.x;
 
 	for (int iter = 0; iter < 10; ++iter) {//500; ++iter) {
@@ -64,30 +66,19 @@ void UCT(Literal* model, int* modelLength, float* target, unsigned char* mask, f
 
 			// UCT expansion
 			expand();
+
+			// UCT simulation
+			simulation(model, indicator);
 		}
-
-		__syncthreads();
-
-		// UCT simulation
-		simulation(model, indicator);
 
 		// compute score
-		score[id] = computeScore(target, mask, indicator);
+		double score = computeScore(target, mask, indicator);
 
 		__syncthreads();
-
-		// merge score
-		int offset = NUM_THREADS / 2;
-		while (offset > 0) {
-			if (id < offset) {
-				score[id] += score[id + offset];
-			}
-			offset /= 2;
-		}
 
 		// UCT backpropagation
 		if (id == 0) {
-			backpropagate(score[0]);
+			backpropagate(score);
 		}
 	}
 }
